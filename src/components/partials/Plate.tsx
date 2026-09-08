@@ -1,0 +1,163 @@
+import styled from "styled-components";
+import { useLocation } from "react-router-dom";
+
+const PlateStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 0.75rem solid transparent;
+  ${({ theme }) => `
+    background:
+      linear-gradient(${theme.colors.light.plateBackground}, ${theme.colors.light.plateBackground}) padding-box,
+      linear-gradient(180deg, ${theme.colors.white}, ${theme.colors.light.plateBorder}) border-box;
+  `}
+  padding: ${({ theme }) => theme.spacing.s};
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+
+  body.dark-mode & {
+    ${({ theme }) => `
+      background:
+        linear-gradient(${theme.colors.dark.plateBackground}, ${theme.colors.dark.plateBackground}) padding-box,
+        linear-gradient(180deg, ${theme.colors.dark.heading}, ${theme.colors.dark.plateBorder}) border-box;
+    `}
+  }
+`;
+
+const PlateContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.s};
+  position: relative;
+  height: 90%;
+  width: 95%;
+`;
+
+const PlateScrew1 = styled.div`
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.light.plateScrew};
+  position: absolute;
+  top: -1rem;
+  left: -0.5rem;
+  z-index: 1;
+`;
+
+const PlateScrew2 = styled.div`
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.light.plateScrew};
+  position: absolute;
+  top: -1rem;
+  right: -0.5rem;
+  z-index: 1;
+`;
+
+const PlateScrew3 = styled.div`
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.light.plateScrew};
+  position: absolute;
+  bottom: -1rem;
+  left: -0.5rem;
+  z-index: 1;
+`;
+
+const PlateScrew4 = styled.div`
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.light.plateScrew};
+  position: absolute;
+  bottom: -1rem;
+  right: -0.5rem;
+  z-index: 1;
+`;
+
+const PlateHeading = styled.h1`
+  text-transform: uppercase;
+  font-size: ${({ theme }) => theme.fontSizes.l};
+  color: ${({ theme }) => theme.colors.light.heading};
+
+  body.dark-mode & {
+    color: ${({ theme }) => theme.colors.dark.heading};
+  }
+`;
+
+const PlateHeadingValue = styled.span`
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+`;
+
+const PlateParagraph = styled.p`
+  text-align: center;
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.light.heading};
+
+  body.dark-mode & {
+    color: ${({ theme }) => theme.colors.dark.body};
+  }
+`;
+
+type PlateVariant = {
+  label: string;
+  value?: string;
+  description: string;
+};
+
+const todayVariant: PlateVariant = {
+  label: "On this day",
+  description:
+    "What happened on this day - historical events, deaths and births throughout time",
+};
+
+const plateVariants: Record<string, PlateVariant> = {
+  "/by-date": {
+    label: "On:",
+    value: "22/08",
+    description:
+      "What happened on this day - Here you can enter a specific date to only get events that happened on this date",
+  },
+  "/since": {
+    label: "Since:",
+    value: "1947",
+    description:
+      "What happened on this day - Here you can enter a specific year to get all the events that happened on this day, since that year",
+  },
+};
+
+export const Plate = () => {
+  const { pathname } = useLocation();
+  const { label, value, description } = plateVariants[pathname] ?? todayVariant;
+
+  return (
+    <PlateStyled>
+      <PlateContent>
+        <PlateScrew1 />
+        <PlateScrew2 />
+        <PlateScrew3 />
+        <PlateScrew4 />
+        <PlateHeading>
+          {label}
+          {value && (
+            <>
+              {" "}
+              <PlateHeadingValue>{value}</PlateHeadingValue>
+            </>
+          )}
+        </PlateHeading>
+        <PlateParagraph>{description}</PlateParagraph>
+      </PlateContent>
+    </PlateStyled>
+  );
+};
