@@ -1,19 +1,42 @@
+type ThemeColors = {
+  background: string;
+  heading: string;
+  body: string;
+  highlight: string;
+  plateBorder: string;
+  plateBackground: string;
+  plateScrew: string;
+};
+
 export const theme = {
   colors: {
-    accent: "#2bbbde",
     white: "#ffffff",
-    text: "#000000",
-    bannerBackground: "#ededed",
-    buttonBackground: "#f7ebec",
-    footerBackground: "#035984",
-    border: "#cccccc",
-    placeholder: "#999999",
-    required: "#e5243b",
+    black: "#000000",
+
+    light: {
+      background: "#FFFFFF",
+      heading: "#695E48",
+      body: "#1F1F1F",
+      highlight: "#FFF5C2",
+      plateBorder: "#C9C9C9",
+      plateBackground: "#FFFFFF",
+      plateScrew: "#C7BD8D",
+    } satisfies ThemeColors,
+
+    dark: {
+      background: "#151515",
+      heading: "#C7BD8D",
+      body: "#FFFFFF",
+      highlight: "#3A3A3A",
+      plateBorder: "#D29E62",
+      plateBackground: "#1F1F1F",
+      plateScrew: "#C7BD8D",
+    } satisfies ThemeColors,
   },
 
   fonts: {
-    heading: "'Oswald', sans-serif",
-    body: "'Open Sans', sans-serif",
+    heading: "'Limelight', sans-serif",
+    body: "'Linden Hill', serif",
   },
 
   fontSizes: {
@@ -33,22 +56,8 @@ export const theme = {
   },
 
   sizes: {
-    topBarHeight: "30px",
-    bannerHeight: "100px",
-    bannerHeightSmall: "72px",
-    bannerIconWidth: "64px",
-    bannerIconWidthSmall: "48px",
-    headerLogoHeight: "108px",
-    headerLogoHeightSmall: "72px",
-    footerLogoHeight: "3.75rem",
-    footerLogoHeightLarge: "8.75rem",
-    inputWidth: "400px",
-    inputHeight: "32px",
-    textareaHeight: "143px",
-    labelWidth: "125px",
-    likeButtonSize: "64px",
-    subjectCardHeight: "219px",
-    subjectCardHeightSmall: "160px",
+    navBarHeight: "30px",
+    headerHeight: "108px",
   },
 
   maxWidths: {
@@ -70,4 +79,6 @@ export const theme = {
     tablet: "768px",
     desktop: "1024px",
   },
-};
+} as const;
+
+export type Theme = typeof theme;

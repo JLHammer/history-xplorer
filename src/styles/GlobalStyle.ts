@@ -23,17 +23,24 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    background-color: ${({ theme }) => theme.colors.white};
+    background-color: ${({ theme }) => theme.colors.light.background};
     font-family: ${({ theme }) => theme.fonts.body};
     font-size: ${({ theme }) => theme.fontSizes.xs};
-    color: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.light.body};
   }
+
+  body.dark-mode {
+  background-color: ${({ theme }) => theme.colors.dark.background};
+  color: ${({ theme }) => theme.colors.dark.body};
+}
 
   main:focus {
     outline: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
+    font-family: ${({ theme }) => theme.fonts.heading};
+    font-weight: 400;
     text-wrap: balance;
   }
 
