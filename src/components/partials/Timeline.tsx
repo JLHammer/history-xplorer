@@ -1,9 +1,14 @@
-import styled from "styled-components";
+import { useEffect, useRef, useState } from "react";
+import styled, { keyframes } from "styled-components";
+import { useInView } from "../../hooks/useInView";
 import { BookIcon } from "../icons/BookIcon";
+import { DownArrowIcon } from "../icons/DownArrowIcon";
 import type { ReactNode } from "react";
 
 type TimelineProps = {
   children: ReactNode;
+  hasMore?: boolean;
+  onMore?: () => void;
 };
 
 type TimelineItemProps = {
@@ -20,6 +25,8 @@ const TimelineStyled = styled.section`
   --reach: calc(var(--tick) + 2rem);
   --measure: 22rem;
   --shift: 0rem;
+  --hint-shift: ${({ theme }) => theme.spacing.xs};
+  --hint-overrun: 8rem;
   --line: 2px;
   --columns: 1fr var(--node) var(--edge);
   --axis: calc(100% - var(--edge) - var(--node) / 2);
@@ -229,12 +236,171 @@ const TimelineItemStyled = styled.li`
   }
 `;
 
-export const Timeline = ({ children }: TimelineProps) => (
-  <TimelineStyled>
-    <TimelineHead aria-hidden="true" />
-    <TimelineList>{children}</TimelineList>
-  </TimelineStyled>
-);
+const TimelineEnd = styled.div`
+  grid-column: 1 / -1;
+  height: 1px;
+  margin-bottom: -1px;
+`;
+
+const TimelineFoot = styled.div`
+  grid-row: 4;
+  grid-column: 1 / -1;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: var(--columns);
+  margin-top: var(--foot-gap);
+  pointer-events: none;
+`;
+
+const TimelineFootHint = styled.button`
+  grid-column: 1 / -1;
+  justify-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-inline-end: calc(-1 * var(--hint-shift));
+  padding-top: ${({ theme }) => theme.spacing.s};
+  padding-bottom: ${({ theme }) => theme.spacing.s};
+  white-space: nowrap;
+  pointer-events: auto;
+  cursor: pointer;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    ${({ theme }) => theme.colors.light.surface}
+      ${({ theme }) => theme.spacing.s}
+  );
+
+  box-shadow: 0 var(--hint-overrun) 0
+    ${({ theme }) => theme.colors.light.surface};
+
+  body.dark-mode & {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      ${({ theme }) => theme.colors.dark.surface}
+        ${({ theme }) => theme.spacing.s}
+    );
+    box-shadow: 0 var(--hint-overrun) 0
+      ${({ theme }) => theme.colors.dark.surface};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    grid-column: 2;
+    justify-self: center;
+    align-items: center;
+    margin-inline-end: 0;
+  }
+`;
+
+const TimelineFootText = styled.span`
+  padding-inline: 0.5rem;
+
+  ${TimelineFootHint}:hover &,
+  ${TimelineFootHint}:focus-visible & {
+    color: ${({ theme }) => theme.colors.light.heading};
+  }
+
+  body.dark-mode ${TimelineFootHint}:hover &,
+  body.dark-mode ${TimelineFootHint}:focus-visible & {
+    color: ${({ theme }) => theme.colors.dark.heading};
+  }
+`;
+
+const bounce = keyframes`
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(0.25rem);
+  }
+`;
+
+const TimelineFootArrow = styled(DownArrowIcon)`
+  font-size: 1.5rem;
+  margin-top: calc(-3.5 / 24 * 1.5rem);
+  stroke-width: var(--line);
+  margin-inline-end: calc(
+    var(--edge) + var(--node) / 2 - 0.75rem + var(--hint-shift)
+  );
+  color: ${({ theme }) => theme.colors.light.timeline};
+
+  ${TimelineFootHint}:hover &,
+  ${TimelineFootHint}:focus-visible & {
+    animation: ${bounce} 0.8s ease-in-out infinite;
+  }
+
+  ${TimelineFootHint}[data-jumping] & {
+    animation-play-state: paused;
+  }
+
+  body.dark-mode & {
+    color: ${({ theme }) => theme.colors.dark.timeline};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    margin-inline-end: 0;
+  }
+`;
+
+export const Timeline = ({ children, hasMore, onMore }: TimelineProps) => {
+  const endRef = useRef<HTMLDivElement>(null);
+
+  const nearEnd = useInView(endRef, "0px 0px 400px 0px");
+
+  useEffect(() => {
+    if (nearEnd && hasMore) onMore?.();
+  }, [nearEnd, hasMore, onMore]);
+
+  const [jumping, setJumping] = useState(false);
+
+  useEffect(() => {
+    if (!jumping) return;
+
+    let timer = 0;
+    const settle = () => setJumping(false);
+    const restart = () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(settle, 150);
+    };
+
+    restart();
+    window.addEventListener("scroll", restart, { passive: true });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", restart);
+    };
+  }, [jumping]);
+
+  const scrollOn = () => {
+    setJumping(true);
+    window.scrollBy({ top: window.innerHeight });
+  };
+
+  return (
+    <TimelineStyled>
+      <TimelineHead aria-hidden="true" />
+      <TimelineList>{children}</TimelineList>
+      <TimelineEnd ref={endRef} aria-hidden="true" />
+      <TimelineFoot>
+        <TimelineFootHint
+          type="button"
+          onClick={scrollOn}
+          data-jumping={jumping || undefined}
+        >
+          <TimelineFootText>Scroll down for more</TimelineFootText>
+          <TimelineFootArrow />
+        </TimelineFootHint>
+      </TimelineFoot>
+    </TimelineStyled>
+  );
+};
 
 export const TimelineItem = ({ label, text, link }: TimelineItemProps) => (
   <TimelineItemStyled>

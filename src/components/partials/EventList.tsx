@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Message } from "../ui/Message";
 import { EventCard } from "../ui/EventCard";
 import { Timeline } from "./Timeline";
@@ -13,12 +14,20 @@ type EventListProps = {
   progress?: { loaded: number; total: number };
 };
 
+const BATCH = 15;
+
 export const EventList = ({
   entries,
   loading,
   error,
   progress,
 }: EventListProps) => {
+  const [revealed, setRevealed] = useState({ of: entries, count: BATCH });
+
+  const count = revealed.of === entries ? revealed.count : BATCH;
+
+  const revealMore = () => setRevealed({ of: entries, count: count + BATCH });
+
   if (error) {
     return <Message role="alert">Could not load events — {error}</Message>;
   }
@@ -43,8 +52,8 @@ export const EventList = ({
       {loading && progress && progress.total > 1 && (
         <Message aria-live="polite">{loadingMessage}</Message>
       )}
-      <Timeline>
-        {entries.map((entry) => (
+      <Timeline hasMore={count < entries.length} onMore={revealMore}>
+        {entries.slice(0, count).map((entry) => (
           <EventCard
             key={`${entry.month}/${entry.day}:${entry.html}`}
             entry={entry}
