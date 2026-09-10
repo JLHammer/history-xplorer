@@ -2,12 +2,8 @@ import type { HistoryEntry, HistoryLink } from "../types/history";
 
 const BASE_URL = "https://history.muffinlabs.com";
 
-export const todayUrl = () => `${BASE_URL}/date`;
-
 export const byDateUrl = (month: number, day: number) =>
   `${BASE_URL}/date/${month}/${day}`;
-
-export const sinceUrl = () => todayUrl();
 
 export type DayOfYear = {
   month: number;

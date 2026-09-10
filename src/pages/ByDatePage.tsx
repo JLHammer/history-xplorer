@@ -4,8 +4,6 @@ import { EventList } from "../components/partials/EventList";
 import { InputField } from "../components/ui/InputField";
 import { Message } from "../components/ui/Message";
 import { useFetch } from "../hooks/useFetch";
-import { byDateUrl, entriesWithYear } from "../api/history";
-import { historyResponseSchema } from "../types/history";
 
 const pad = (value: number) => `${value}`.padStart(2, "0");
 
@@ -23,9 +21,8 @@ export const ByDatePage = () => {
   const isValidDate =
     dayNumber >= 1 && dayNumber <= 31 && monthNumber >= 1 && monthNumber <= 12;
 
-  const { data, error, loading } = useFetch(
-    isValidDate ? byDateUrl(monthNumber, dayNumber) : null,
-    { schema: historyResponseSchema },
+  const { entries, error, loading, loaded, total } = useFetch(
+    isValidDate ? { month: monthNumber, day: dayNumber } : null,
   );
 
   return (
@@ -64,9 +61,10 @@ export const ByDatePage = () => {
         </Message>
       )}
       <EventList
-        entries={data && entriesWithYear(data.data.Events)}
+        entries={entries}
         loading={loading}
         error={error}
+        progress={{ loaded, total }}
       />
     </ContentWrapper>
   );

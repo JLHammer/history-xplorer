@@ -4,13 +4,7 @@ import { ContentWrapper } from "../components/partials/ContentWrapper";
 import { EventList } from "../components/partials/EventList";
 import { InputField } from "../components/ui/InputField";
 import { Message } from "../components/ui/Message";
-import { historyResponseSchema } from "../types/history";
-import {
-  entriesSince,
-  entriesWithYear,
-  parseEntryYear,
-  sinceUrl,
-} from "../api/history";
+import { entriesSince, parseEntryYear, todayDay } from "../api/history";
 
 const MIN_YEAR = -9999;
 const MAX_YEAR = new Date().getFullYear();
@@ -28,15 +22,10 @@ export const SincePage = () => {
   const isValidYear =
     parsedYear !== null && parsedYear >= MIN_YEAR && parsedYear <= MAX_YEAR;
 
-  const { data, error, loading } = useFetch(sinceUrl(), {
-    schema: historyResponseSchema,
-  });
+  const { entries, error, loading } = useFetch(todayDay());
 
   const events =
-    data &&
-    (isValidYear
-      ? entriesSince(data.data.Events, parsedYear)
-      : entriesWithYear(data.data.Events));
+    entries && (isValidYear ? entriesSince(entries, parsedYear) : entries);
 
   return (
     <ContentWrapper
