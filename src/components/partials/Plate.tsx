@@ -46,47 +46,14 @@ const PlateContent = styled.div`
   width: 95%;
 `;
 
-const PlateScrew1 = styled.div`
+const PlateScrew = styled.div<{ $corner: "tl" | "tr" | "bl" | "br" }>`
   width: 0.75rem;
   height: 0.75rem;
   border-radius: 50%;
   background-color: ${({ theme }) => theme.colors.light.plateScrew};
   position: absolute;
-  top: -1rem;
-  left: -0.5rem;
-  z-index: 1;
-`;
-
-const PlateScrew2 = styled.div`
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.light.plateScrew};
-  position: absolute;
-  top: -1rem;
-  right: -0.5rem;
-  z-index: 1;
-`;
-
-const PlateScrew3 = styled.div`
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.light.plateScrew};
-  position: absolute;
-  bottom: -1rem;
-  left: -0.5rem;
-  z-index: 1;
-`;
-
-const PlateScrew4 = styled.div`
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.light.plateScrew};
-  position: absolute;
-  bottom: -1rem;
-  right: -0.5rem;
+  ${({ $corner }) => ($corner[0] === "t" ? "top" : "bottom")}: 0.5rem;
+  ${({ $corner }) => ($corner[1] === "l" ? "left" : "right")}: 0.5rem;
   z-index: 1;
 `;
 
@@ -131,11 +98,11 @@ const PlateParagraph = styled.p`
 export const Plate = ({ label, value, description }: PlateProps) => {
   return (
     <PlateStyled>
+      <PlateScrew $corner="tl" />
+      <PlateScrew $corner="tr" />
+      <PlateScrew $corner="bl" />
+      <PlateScrew $corner="br" />
       <PlateContent>
-        <PlateScrew1 />
-        <PlateScrew2 />
-        <PlateScrew3 />
-        <PlateScrew4 />
         <PlateHeading>
           {label}
           {value && (
