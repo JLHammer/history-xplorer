@@ -37,6 +37,16 @@ const PlateStyled = styled.div`
     `}
   }
 
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    top: auto;
+    bottom: -${({ theme }) => theme.spacing.xl};
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: ${({ theme }) => theme.maxWidths.content};
+    height: auto;
+    min-height: 56%;
+    z-index: 1;
+  }
 `;
 
 const PlateContent = styled.div`
@@ -73,6 +83,10 @@ const PlateHeading = styled.h1`
 
   body.dark-mode & {
     color: ${({ theme }) => theme.colors.dark.heading};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    font-size: ${({ theme }) => theme.fontSizes.xxl};
   }
 `;
 
@@ -111,12 +125,23 @@ const PlateSubheading = styled.span`
 `;
 
 const PlateParagraph = styled.p`
+  min-height: 3lh;
   text-align: center;
+  text-wrap: balance;
   font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.light.heading};
 
   body.dark-mode & {
     color: ${({ theme }) => theme.colors.dark.heading};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    min-height: 2lh;
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    min-height: 3lh;
+    max-width: 30ch;
   }
 `;
 

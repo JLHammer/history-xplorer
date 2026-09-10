@@ -11,6 +11,12 @@ const NavBarStyled = styled.nav`
   body.dark-mode & {
     background-color: ${({ theme }) => theme.colors.dark.surface};
   }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    padding-top: calc(
+      ${({ theme }) => theme.spacing.xl} + ${({ theme }) => theme.spacing.l}
+    );
+  }
 `;
 
 const NavUl = styled.ul`
