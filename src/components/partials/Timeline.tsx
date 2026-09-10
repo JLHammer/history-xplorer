@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { useInView } from "../../hooks/useInView";
+import { useScrolledToBottom } from "../../hooks/useScrolledToBottom";
+import { useScrolledPastTop } from "../../hooks/useScrolledPastTop";
+import { BackToTopButton } from "../ui/ScrollToTopButton";
 import { BookIcon } from "../icons/BookIcon";
 import { DownArrowIcon } from "../icons/DownArrowIcon";
 import type { ReactNode, RefObject } from "react";
@@ -268,6 +271,14 @@ const TimelineEnd = styled.div`
   margin-bottom: -1px;
 `;
 
+const TimelineBottom = styled.div`
+  grid-row: 6;
+  grid-column: 1 / -1;
+  height: ${({ theme }) => theme.spacing.s};
+  margin-top: calc(${({ theme }) => theme.spacing.s} * -1);
+  pointer-events: none;
+`;
+
 const TimelineFoot = styled.div`
   grid-row: 4;
   grid-column: 1 / -1;
@@ -293,6 +304,9 @@ const TimelineFootHint = styled.button`
   white-space: nowrap;
   pointer-events: auto;
   cursor: pointer;
+  transition:
+    padding-top 0.3s ease,
+    gap 0.3s ease;
   background: linear-gradient(
     to bottom,
     transparent,
@@ -314,6 +328,14 @@ const TimelineFootHint = styled.button`
       ${({ theme }) => theme.colors.dark.surface};
   }
 
+  [data-ended] & {
+    gap: 0;
+    padding-top: 0;
+    box-shadow: none;
+    pointer-events: none;
+    cursor: default;
+  }
+
   @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
     grid-column: 2;
     justify-self: center;
@@ -323,7 +345,12 @@ const TimelineFootHint = styled.button`
 `;
 
 const TimelineFootText = styled.span`
+  max-height: 2rem;
   padding-inline: 0.5rem;
+  overflow: hidden;
+  transition:
+    opacity 0.3s ease,
+    max-height 0.3s ease;
 
   ${TimelineFootHint}:hover &,
   ${TimelineFootHint}:focus-visible & {
@@ -333,6 +360,11 @@ const TimelineFootText = styled.span`
   body.dark-mode ${TimelineFootHint}:hover &,
   body.dark-mode ${TimelineFootHint}:focus-visible & {
     color: ${({ theme }) => theme.colors.dark.heading};
+  }
+
+  [data-ended] & {
+    max-height: 0;
+    opacity: 0;
   }
 `;
 
@@ -350,7 +382,9 @@ const bounce = keyframes`
 const TimelineFootArrow = styled(DownArrowIcon)`
   font-size: 1.5rem;
   margin-top: calc(-3.5 / 24 * 1.5rem);
-  stroke-width: var(--line);
+  stroke-width: calc(
+    var(--line) + (var(--trace) - var(--line)) * var(--arrived, 0)
+  );
   margin-inline-end: calc(
     var(--edge) + var(--node) / 2 - 0.75rem + var(--hint-shift)
   );
@@ -365,6 +399,10 @@ const TimelineFootArrow = styled(DownArrowIcon)`
     animation-play-state: paused;
   }
 
+  [data-ended] & {
+    animation: none;
+  }
+
   body.dark-mode & {
     color: ${({ theme }) => theme.colors.dark.timeline};
   }
@@ -374,17 +412,38 @@ const TimelineFootArrow = styled(DownArrowIcon)`
   }
 `;
 
+const TimelineClose = styled.div`
+  grid-row: 5;
+  grid-column: 2;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+`;
+
+const TimelineReturn = styled(BackToTopButton)`
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    display: none;
+  }
+`;
+
 const useTraced = (
   timelineRef: RefObject<HTMLElement | null>,
   headRef: RefObject<HTMLElement | null>,
   listRef: RefObject<HTMLElement | null>,
+  arrowRef: RefObject<Element | null>,
+  hasMore: boolean,
+  atBottom: boolean,
 ) => {
   useEffect(() => {
     const timeline = timelineRef.current;
     const head = headRef.current;
     const list = listRef.current;
+    const arrow = arrowRef.current;
 
-    if (!timeline || !head || !list) return;
+    if (!timeline || !head || !list || !arrow) return;
 
     let frame = 0;
 
@@ -393,9 +452,30 @@ const useTraced = (
 
       const { scrollY } = window;
       const viewport = window.visualViewport?.height ?? window.innerHeight;
-      const tip = scrollY + viewport / 2;
+      const middle = scrollY + viewport / 2;
       const top =
         scrollY + head.getBoundingClientRect().top + head.offsetHeight / 2;
+
+      const overrun = -parseFloat(getComputedStyle(list, "::before").bottom);
+      const bottom = scrollY + list.getBoundingClientRect().bottom + overrun;
+      const arrowHeight = arrow.getBoundingClientRect().height;
+      const point = bottom + arrowHeight;
+      const runUp = viewport / 2;
+
+      let tip = middle;
+
+      if (!hasMore) {
+        const maxScroll = document.documentElement.scrollHeight - viewport;
+        const shortfall = point - (maxScroll + viewport / 2);
+
+        if (shortfall > 0) {
+          const runUpDone = atBottom
+            ? 1
+            : (scrollY - (maxScroll - runUp)) / runUp;
+
+          tip += shortfall * Math.min(Math.max(runUpDone, 0), 1);
+        }
+      }
 
       const reached = Array.from(
         list.querySelectorAll<HTMLElement>("[data-node]"),
@@ -406,7 +486,12 @@ const useTraced = (
         },
       );
 
+      const arrived = hasMore
+        ? 0
+        : 1 - Math.min(Math.max(point - tip, 0), arrowHeight) / arrowHeight;
+
       timeline.style.setProperty("--traced", `${Math.max(tip - top, 0)}px`);
+      timeline.style.setProperty("--arrived", `${arrived}`);
 
       for (const [node, isReached] of reached) {
         node.toggleAttribute("data-traced", isReached);
@@ -433,7 +518,7 @@ const useTraced = (
       window.visualViewport?.removeEventListener("resize", schedule);
       observer.disconnect();
     };
-  }, [timelineRef, headRef, listRef]);
+  }, [timelineRef, headRef, listRef, arrowRef, hasMore, atBottom]);
 };
 
 export const Timeline = ({ children, hasMore, onMore }: TimelineProps) => {
@@ -441,14 +526,29 @@ export const Timeline = ({ children, hasMore, onMore }: TimelineProps) => {
   const headRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
-
-  useTraced(timelineRef, headRef, listRef);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const arrowRef = useRef<SVGSVGElement>(null);
+  const scrolledPast = useScrolledPastTop();
 
   const nearEnd = useInView(endRef, "0px 0px 400px 0px");
+  const bottomInView = useInView(bottomRef);
+  const scrolledToBottom = useScrolledToBottom(16);
+  const atBottom = bottomInView || scrolledToBottom;
+
+  useTraced(
+    timelineRef,
+    headRef,
+    listRef,
+    arrowRef,
+    Boolean(hasMore),
+    atBottom,
+  );
 
   useEffect(() => {
     if (nearEnd && hasMore) onMore?.();
   }, [nearEnd, hasMore, onMore]);
+
+  const ended = atBottom && !hasMore;
 
   const [jumping, setJumping] = useState(false);
 
@@ -481,16 +581,25 @@ export const Timeline = ({ children, hasMore, onMore }: TimelineProps) => {
       <TimelineHead ref={headRef} aria-hidden="true" />
       <TimelineList ref={listRef}>{children}</TimelineList>
       <TimelineEnd ref={endRef} aria-hidden="true" />
-      <TimelineFoot>
+      <TimelineFoot data-ended={ended || undefined} aria-hidden={ended}>
         <TimelineFootHint
           type="button"
           onClick={scrollOn}
           data-jumping={jumping || undefined}
+          disabled={ended}
+          tabIndex={ended ? -1 : undefined}
         >
           <TimelineFootText>Scroll down for more</TimelineFootText>
-          <TimelineFootArrow />
+          <TimelineFootArrow ref={arrowRef} />
         </TimelineFootHint>
       </TimelineFoot>
+      {!hasMore && (
+        <TimelineClose>
+          <span>End of the line…</span>
+          {scrolledPast && <TimelineReturn />}
+        </TimelineClose>
+      )}
+      <TimelineBottom ref={bottomRef} aria-hidden="true" />
     </TimelineStyled>
   );
 };
