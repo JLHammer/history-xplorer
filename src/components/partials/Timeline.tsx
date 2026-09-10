@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { useInView } from "../../hooks/useInView";
 import { BookIcon } from "../icons/BookIcon";
 import { DownArrowIcon } from "../icons/DownArrowIcon";
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 
 type TimelineProps = {
   children: ReactNode;
@@ -28,6 +28,7 @@ const TimelineStyled = styled.section`
   --hint-shift: ${({ theme }) => theme.spacing.xs};
   --hint-overrun: 8rem;
   --line: 2px;
+  --trace: 6px;
   --columns: 1fr var(--node) var(--edge);
   --axis: calc(100% - var(--edge) - var(--node) / 2);
   --gap: ${({ theme }) => theme.spacing.xl};
@@ -73,19 +74,35 @@ const TimelineList = styled.ol`
   gap: var(--gap);
   margin-top: var(--head-gap);
 
-  &::before {
+  &::before,
+  &::after {
     content: "";
     position: absolute;
     top: calc(-1 * (var(--head-gap) + var(--head) / 2));
-    bottom: calc(-1 * var(--foot-gap));
     left: var(--axis);
     transform: translateX(-50%);
-    width: var(--line);
     background-color: ${({ theme }) => theme.colors.light.timeline};
 
     body.dark-mode & {
       background-color: ${({ theme }) => theme.colors.dark.timeline};
     }
+  }
+
+  &::before {
+    bottom: calc(-1 * var(--foot-gap));
+    width: var(--line);
+  }
+
+  &::after {
+    width: var(--trace);
+    height: min(
+      var(--traced, 0px),
+      calc(
+        100% + var(--head-gap) + var(--head) / 2 + var(--foot-gap) +
+          var(--trace) / 2
+      )
+    );
+    border-radius: calc(var(--trace) / 2);
   }
 `;
 
@@ -131,10 +148,19 @@ const TimelineNode = styled.span`
   border-radius: ${({ theme }) => theme.radii.round};
   background-color: ${({ theme }) => theme.colors.light.surface};
   transform: translateY(50%);
+  transition: background-color 0.3s ease;
 
   body.dark-mode & {
     border-color: ${({ theme }) => theme.colors.dark.timeline};
     background-color: ${({ theme }) => theme.colors.dark.surface};
+  }
+
+  &[data-traced] {
+    background-color: ${({ theme }) => theme.colors.light.timeline};
+  }
+
+  body.dark-mode &[data-traced] {
+    background-color: ${({ theme }) => theme.colors.dark.timeline};
   }
 `;
 
@@ -348,8 +374,75 @@ const TimelineFootArrow = styled(DownArrowIcon)`
   }
 `;
 
+const useTraced = (
+  timelineRef: RefObject<HTMLElement | null>,
+  headRef: RefObject<HTMLElement | null>,
+  listRef: RefObject<HTMLElement | null>,
+) => {
+  useEffect(() => {
+    const timeline = timelineRef.current;
+    const head = headRef.current;
+    const list = listRef.current;
+
+    if (!timeline || !head || !list) return;
+
+    let frame = 0;
+
+    const trace = () => {
+      frame = 0;
+
+      const { scrollY } = window;
+      const viewport = window.visualViewport?.height ?? window.innerHeight;
+      const tip = scrollY + viewport / 2;
+      const top =
+        scrollY + head.getBoundingClientRect().top + head.offsetHeight / 2;
+
+      const reached = Array.from(
+        list.querySelectorAll<HTMLElement>("[data-node]"),
+        (node) => {
+          const { top: nodeTop, height } = node.getBoundingClientRect();
+
+          return [node, scrollY + nodeTop + height / 2 <= tip] as const;
+        },
+      );
+
+      timeline.style.setProperty("--traced", `${Math.max(tip - top, 0)}px`);
+
+      for (const [node, isReached] of reached) {
+        node.toggleAttribute("data-traced", isReached);
+      }
+    };
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(trace);
+    };
+
+    trace();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    window.visualViewport?.addEventListener("resize", schedule);
+
+    const observer = new ResizeObserver(schedule);
+    observer.observe(list);
+    observer.observe(document.documentElement);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.visualViewport?.removeEventListener("resize", schedule);
+      observer.disconnect();
+    };
+  }, [timelineRef, headRef, listRef]);
+};
+
 export const Timeline = ({ children, hasMore, onMore }: TimelineProps) => {
+  const timelineRef = useRef<HTMLElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+
+  useTraced(timelineRef, headRef, listRef);
 
   const nearEnd = useInView(endRef, "0px 0px 400px 0px");
 
@@ -384,9 +477,9 @@ export const Timeline = ({ children, hasMore, onMore }: TimelineProps) => {
   };
 
   return (
-    <TimelineStyled>
-      <TimelineHead aria-hidden="true" />
-      <TimelineList>{children}</TimelineList>
+    <TimelineStyled ref={timelineRef}>
+      <TimelineHead ref={headRef} aria-hidden="true" />
+      <TimelineList ref={listRef}>{children}</TimelineList>
       <TimelineEnd ref={endRef} aria-hidden="true" />
       <TimelineFoot>
         <TimelineFootHint
@@ -405,7 +498,7 @@ export const Timeline = ({ children, hasMore, onMore }: TimelineProps) => {
 export const TimelineItem = ({ label, text, link }: TimelineItemProps) => (
   <TimelineItemStyled>
     <TimelineLabel>{label}</TimelineLabel>
-    <TimelineNode aria-hidden="true" />
+    <TimelineNode data-node aria-hidden="true" />
     <TimelineBody>
       {text && <p>{text}</p>}
       {link && (
