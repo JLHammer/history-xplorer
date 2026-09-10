@@ -9,23 +9,46 @@ export const byDateUrl = (month: number, day: number) =>
 
 export const sinceUrl = () => todayUrl();
 
+const stripFootnotes = (year: string) => year.replace(/\[\d+\]/g, "").trim();
+
 export const parseEntryYear = (year: string) => {
-  const value = Number.parseInt(year, 10);
+  const cleaned = stripFootnotes(year);
+  const value = Number.parseInt(cleaned, 10);
 
   if (Number.isNaN(value)) return null;
 
-  return /bce?$/i.test(year) ? -value : value;
+  return /bce?$/i.test(cleaned) ? -value : value;
 };
 
 export const formatEntryYear = (year: string) =>
-  year.replace(/\s*(bce|bc|ce|ad)$/i, (_match, era: string) =>
+  stripFootnotes(year).replace(/\s*(bce|bc|ce|ad)$/i, (_match, era: string) =>
     /^b/i.test(era) ? " BCE" : "",
   );
+
+const LEAKED_ENTRY = /^(\d+)(?:\s*[-–—─]\s*|\s+)(\S+\s+\S.*)$/s;
+
+export const unleakEntry = <T extends HistoryEntry>(entry: T): T => {
+  if (entry.text !== null) return entry;
+
+  const match = LEAKED_ENTRY.exec(entry.year);
+
+  if (!match) return entry;
+
+  return { ...entry, year: match[1], text: match[2] };
+};
 
 export const entriesWithYear = (entries: HistoryEntry[]) =>
   entries.filter((entry) => parseEntryYear(entry.year) !== null);
 
-export const entriesSince = (entries: HistoryEntry[], year: number) =>
+export const entriesInYear = <T extends HistoryEntry>(
+  entries: T[],
+  year: number,
+) => entries.filter((entry) => parseEntryYear(entry.year) === year);
+
+export const entriesSince = <T extends HistoryEntry>(
+  entries: T[],
+  year: number,
+) =>
   entries.filter((entry) => {
     const entryYear = parseEntryYear(entry.year);
 
