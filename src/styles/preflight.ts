@@ -137,6 +137,7 @@ export const preflight = css`
 
   [type="search"] {
     -webkit-appearance: textfield;
+    appearance: textfield;
     outline-offset: -2px;
   }
 
