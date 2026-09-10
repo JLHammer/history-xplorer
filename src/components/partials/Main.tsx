@@ -7,6 +7,7 @@ type MainProps = {
 };
 
 const MainStyled = styled.main`
+  position: relative;
   display: flex;
   flex-direction: column;
   background-color: ${({ theme }) => theme.colors.light.background};

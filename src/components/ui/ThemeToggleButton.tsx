@@ -1,17 +1,36 @@
 import { useContext } from "react";
 import styled from "styled-components";
 import { ThemeContext } from "../../contexts/ThemeContext";
-import toggleDark from "../../assets/toggle-dark.svg";
-import toggleLight from "../../assets/toggle-light.svg";
+import { LightBulbIcon } from "../icons/LightBulbIcon";
 
 const ThemeToggleButtonStyled = styled.button`
-  align-self: flex-start;
+  position: absolute;
+  top: ${({ theme }) => theme.spacing.s};
+  left: ${({ theme }) => theme.spacing.s};
+  display: inline-flex;
+  padding: 0.25rem;
+  font-size: 2.25rem;
+  color: ${({ theme }) => theme.colors.light.body};
   cursor: pointer;
-`;
 
-const ThemeToggleIcon = styled.img`
-  width: 2rem;
-  height: 2rem;
+  &:hover,
+  &:focus-visible {
+    color: ${({ theme }) => theme.colors.light.heading};
+  }
+
+  body.dark-mode & {
+    color: ${({ theme }) => theme.colors.dark.body};
+  }
+
+  body.dark-mode &:hover,
+  body.dark-mode &:focus-visible {
+    color: ${({ theme }) => theme.colors.dark.heading};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    left: auto;
+    right: ${({ theme }) => theme.spacing.s};
+  }
 `;
 
 export const ThemeToggleButton = () => {
@@ -23,7 +42,7 @@ export const ThemeToggleButton = () => {
       onClick={toggleTheme}
       aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
     >
-      <ThemeToggleIcon src={darkMode ? toggleDark : toggleLight} alt="" />
+      <LightBulbIcon />
     </ThemeToggleButtonStyled>
   );
 };
