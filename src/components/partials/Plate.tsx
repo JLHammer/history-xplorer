@@ -16,21 +16,21 @@ const PlateStyled = styled.div`
   ${({ theme }) => `
     background:
       linear-gradient(${theme.colors.light.plateBackground}, ${theme.colors.light.plateBackground}) padding-box,
-      linear-gradient(180deg, ${theme.colors.white}, ${theme.colors.light.plateBorder}) border-box;
+      linear-gradient(180deg, ${theme.colors.light.plateBorder}, ${theme.colors.light.plateBorderEnd}) border-box;
   `}
   padding: ${({ theme }) => theme.spacing.s};
   position: absolute;
-  top: 50%;
+  top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;
-  height: 80%;
+  width: 90%;
+  height: 55%;
 
   body.dark-mode & {
     ${({ theme }) => `
       background:
         linear-gradient(${theme.colors.dark.plateBackground}, ${theme.colors.dark.plateBackground}) padding-box,
-        linear-gradient(180deg, ${theme.colors.dark.heading}, ${theme.colors.dark.plateBorder}) border-box;
+        linear-gradient(180deg, ${theme.colors.dark.plateBorder}, ${theme.colors.dark.plateBorderEnd}) border-box;
     `}
   }
 `;
@@ -40,7 +40,7 @@ const PlateContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.s};
+  gap: calc(${({ theme }) => theme.spacing.s} / 2);
   position: relative;
   height: 90%;
   width: 95%;
@@ -70,18 +70,12 @@ const PlateHeading = styled.h1`
 const PlateHeadingValue = styled.span`
   display: inline-block;
   margin-left: ${({ theme }) => theme.spacing.xs};
-  border-bottom: 2px solid ${({ theme }) => theme.colors.light.plateBorder};
-
-  &:focus-within {
-    border-bottom-color: ${({ theme }) => theme.colors.light.heading};
-  }
+  color: ${({ theme }) => theme.colors.light.accent};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.light.accent};
 
   body.dark-mode & {
-    border-bottom-color: ${({ theme }) => theme.colors.dark.plateBorder};
-  }
-
-  body.dark-mode &:focus-within {
-    border-bottom-color: ${({ theme }) => theme.colors.dark.heading};
+    color: ${({ theme }) => theme.colors.dark.accent};
+    border-bottom-color: ${({ theme }) => theme.colors.dark.accent};
   }
 `;
 
@@ -91,7 +85,7 @@ const PlateParagraph = styled.p`
   color: ${({ theme }) => theme.colors.light.heading};
 
   body.dark-mode & {
-    color: ${({ theme }) => theme.colors.dark.body};
+    color: ${({ theme }) => theme.colors.dark.heading};
   }
 `;
 
