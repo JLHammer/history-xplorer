@@ -15,14 +15,22 @@ const NavBarStyled = styled.nav`
 
 const NavUl = styled.ul`
   width: 100%;
+  max-width: ${({ theme }) => theme.maxWidths.content};
+  margin-inline: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   justify-content: center;
   align-items: center;
   background-color: ${({ theme }) => theme.colors.light.surface};
   gap: 0.5rem;
+
   body.dark-mode & {
     background-color: ${({ theme }) => theme.colors.dark.surface};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    flex-direction: row;
+    justify-content: space-evenly;
   }
 `;
 
@@ -31,23 +39,31 @@ const NavLi = styled.li``;
 const NavBarLink = styled(NavLink)`
   display: inline-block;
   padding: 0 ${({ theme }) => theme.spacing.s};
-  size: ${({ theme }) => theme.fontSizes.l};
-  color: ${({ theme }) => theme.colors.light.body};
+  font-size: ${({ theme }) => theme.fontSizes.l};
+  color: ${({ theme }) => theme.colors.light.heading};
   text-decoration: none;
   text-transform: uppercase;
   transition: transform 0.15s ease;
 
   &.active {
-    color: ${({ theme }) => theme.colors.light.heading};
+    color: ${({ theme }) => theme.colors.light.accent};
+    font-weight: 700;
     text-decoration: underline;
+    text-underline-offset: 0.2rem;
   }
 
   body.dark-mode & {
-    color: ${({ theme }) => theme.colors.dark.body};
+    color: ${({ theme }) => theme.colors.dark.heading};
   }
 
   body.dark-mode &.active {
-    color: ${({ theme }) => theme.colors.dark.heading};
+    color: ${({ theme }) => theme.colors.dark.accent};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    &.active {
+      transform: translateY(-4px);
+    }
   }
 `;
 
