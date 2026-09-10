@@ -70,12 +70,12 @@ export const theme = {
   },
 
   fontSizes: {
-    xs: "0.875rem",
-    s: "1rem",
-    m: "1.25rem",
-    l: "1.5rem",
-    xl: "1.875rem",
-    xxl: "2.5rem",
+    xs: "1rem",
+    s: "1.125rem",
+    m: "1.375rem",
+    l: "1.75rem",
+    xl: "2.125rem",
+    xxl: "3rem",
   },
 
   spacing: {
