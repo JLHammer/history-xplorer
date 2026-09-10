@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import headerImage from "../../assets/header-image.avif";
-import { Plate } from "./Plate";
+import type { ReactNode } from "react";
+
+type HeaderProps = {
+  children?: ReactNode;
+};
 
 const HeaderStyled = styled.header`
   display: flex;
@@ -22,13 +26,13 @@ const HeaderImage = styled.img`
   object-fit: cover;
 `;
 
-export const Header = () => {
+export const Header = ({ children }: HeaderProps) => {
   return (
     <HeaderStyled>
-      <Plate />
       <HeaderImageContainer>
-        <HeaderImage src={headerImage} alt="" />
+        <HeaderImage src={headerImage} alt="History Xplorer Header Image" />
       </HeaderImageContainer>
+      {children}
     </HeaderStyled>
   );
 };

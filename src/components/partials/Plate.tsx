@@ -1,5 +1,11 @@
 import styled from "styled-components";
-import { useLocation } from "react-router-dom";
+import type { ReactNode } from "react";
+
+export type PlateProps = {
+  label: string;
+  value?: ReactNode;
+  description: string;
+};
 
 const PlateStyled = styled.div`
   display: flex;
@@ -14,7 +20,7 @@ const PlateStyled = styled.div`
   `}
   padding: ${({ theme }) => theme.spacing.s};
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 80%;
@@ -94,9 +100,24 @@ const PlateHeading = styled.h1`
   }
 `;
 
+// A border rather than text-decoration, which browsers refuse to draw across
+// inputs, leaving the line split between the day and month fields
 const PlateHeadingValue = styled.span`
-  text-decoration: underline;
-  text-underline-offset: 0.25rem;
+  display: inline-block;
+  margin-left: ${({ theme }) => theme.spacing.xs};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.light.plateBorder};
+
+  &:focus-within {
+    border-bottom-color: ${({ theme }) => theme.colors.light.heading};
+  }
+
+  body.dark-mode & {
+    border-bottom-color: ${({ theme }) => theme.colors.dark.plateBorder};
+  }
+
+  body.dark-mode &:focus-within {
+    border-bottom-color: ${({ theme }) => theme.colors.dark.heading};
+  }
 `;
 
 const PlateParagraph = styled.p`
@@ -109,37 +130,7 @@ const PlateParagraph = styled.p`
   }
 `;
 
-type PlateVariant = {
-  label: string;
-  value?: string;
-  description: string;
-};
-
-const todayVariant: PlateVariant = {
-  label: "On this day",
-  description:
-    "What happened on this day - historical events, deaths and births throughout time",
-};
-
-const plateVariants: Record<string, PlateVariant> = {
-  "/by-date": {
-    label: "On:",
-    value: "22/08",
-    description:
-      "What happened on this day - Here you can enter a specific date to only get events that happened on this date",
-  },
-  "/since": {
-    label: "Since:",
-    value: "1947",
-    description:
-      "What happened on this day - Here you can enter a specific year to get all the events that happened on this day, since that year",
-  },
-};
-
-export const Plate = () => {
-  const { pathname } = useLocation();
-  const { label, value, description } = plateVariants[pathname] ?? todayVariant;
-
+export const Plate = ({ label, value, description }: PlateProps) => {
   return (
     <PlateStyled>
       <PlateContent>
