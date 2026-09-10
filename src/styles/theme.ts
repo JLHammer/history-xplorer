@@ -1,36 +1,66 @@
+const palette = {
+  cream: "#FFE9BF",
+  ivory: "#FFF5C2",
+  tan: "#D29E62",
+  umber: "#695E48",
+  walnut: "#6B4B2E",
+  khaki: "#C7BD8D",
+  charcoal: "#1F1F1F",
+  ink: "#151515",
+  smoke: "#F5F5F5",
+  white: "#FFFFFF",
+  silver: "#C9C9C9",
+  graphite: "#3A3A3A",
+} as const;
+
 type ThemeColors = {
   background: string;
+  surface: string;
   heading: string;
   body: string;
+  accent: string;
   highlight: string;
   plateBorder: string;
+  plateBorderEnd: string;
   plateBackground: string;
   plateScrew: string;
+  timeline: string;
+  corner: string;
 };
 
 export const theme = {
   colors: {
-    white: "#ffffff",
-    black: "#000000",
+    palette,
+    white: palette.white,
 
     light: {
-      background: "#FFFFFF",
-      heading: "#695E48",
-      body: "#1F1F1F",
-      highlight: "#FFF5C2",
-      plateBorder: "#C9C9C9",
-      plateBackground: "#FFFFFF",
-      plateScrew: "#C7BD8D",
+      background: palette.umber,
+      surface: palette.smoke,
+      heading: palette.umber,
+      body: palette.charcoal,
+      accent: palette.umber,
+      highlight: palette.cream,
+      plateBorder: palette.silver,
+      plateBorderEnd: palette.silver,
+      plateBackground: palette.white,
+      plateScrew: palette.khaki,
+      timeline: palette.khaki,
+      corner: palette.cream,
     } satisfies ThemeColors,
 
     dark: {
-      background: "#151515",
-      heading: "#C7BD8D",
-      body: "#FFFFFF",
-      highlight: "#3A3A3A",
-      plateBorder: "#D29E62",
-      plateBackground: "#1F1F1F",
-      plateScrew: "#C7BD8D",
+      background: palette.charcoal,
+      surface: palette.ink,
+      heading: palette.khaki,
+      body: palette.white,
+      accent: palette.ivory,
+      highlight: palette.graphite,
+      plateBorder: palette.umber,
+      plateBorderEnd: palette.walnut,
+      plateBackground: palette.charcoal,
+      plateScrew: palette.khaki,
+      timeline: palette.khaki,
+      corner: palette.umber,
     } satisfies ThemeColors,
   },
 
@@ -45,6 +75,7 @@ export const theme = {
     m: "1.25rem",
     l: "1.5rem",
     xl: "1.875rem",
+    xxl: "2.5rem",
   },
 
   spacing: {
