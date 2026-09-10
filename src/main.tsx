@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
-import { ThemeContextProvider } from "./contexts/ThemeContext.tsx";
+import { ThemeContextProvider } from "./contexts/ThemeContextProvider.tsx";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/theme.ts";
 import { GlobalStyle } from "./styles/GlobalStyle.ts";
