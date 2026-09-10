@@ -4,6 +4,9 @@ import type { ReactNode } from "react";
 export type PlateProps = {
   label: string;
   value?: ReactNode;
+  valueEmpty?: boolean;
+  control?: ReactNode;
+  subheading?: ReactNode;
   description: string;
 };
 
@@ -33,6 +36,7 @@ const PlateStyled = styled.div`
         linear-gradient(180deg, ${theme.colors.dark.plateBorder}, ${theme.colors.dark.plateBorderEnd}) border-box;
     `}
   }
+
 `;
 
 const PlateContent = styled.div`
@@ -58,6 +62,11 @@ const PlateScrew = styled.div<{ $corner: "tl" | "tr" | "bl" | "br" }>`
 `;
 
 const PlateHeading = styled.h1`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  white-space: nowrap;
   text-transform: uppercase;
   font-size: ${({ theme }) => theme.fontSizes.l};
   color: ${({ theme }) => theme.colors.light.heading};
@@ -67,15 +76,37 @@ const PlateHeading = styled.h1`
   }
 `;
 
-const PlateHeadingValue = styled.span`
-  display: inline-block;
-  margin-left: ${({ theme }) => theme.spacing.xs};
+const PlateHeadingLine = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+`;
+
+const PlateHeadingValue = styled.span<{ $empty: boolean }>`
   color: ${({ theme }) => theme.colors.light.accent};
-  border-bottom: 2px solid ${({ theme }) => theme.colors.light.accent};
+  border-bottom: 2px solid
+    ${({ $empty, theme }) =>
+      $empty ? theme.colors.light.plateBorder : theme.colors.light.accent};
 
   body.dark-mode & {
     color: ${({ theme }) => theme.colors.dark.accent};
-    border-bottom-color: ${({ theme }) => theme.colors.dark.accent};
+    border-bottom-color: ${({ $empty, theme }) =>
+      $empty ? theme.colors.dark.plateBorder : theme.colors.dark.accent};
+  }
+`;
+
+const PlateHeadingControl = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+`;
+
+const PlateSubheading = styled.span`
+  color: ${({ theme }) => theme.colors.light.accent};
+
+  body.dark-mode & {
+    color: ${({ theme }) => theme.colors.dark.accent};
   }
 `;
 
@@ -89,7 +120,14 @@ const PlateParagraph = styled.p`
   }
 `;
 
-export const Plate = ({ label, value, description }: PlateProps) => {
+export const Plate = ({
+  label,
+  value,
+  valueEmpty = false,
+  control,
+  subheading,
+  description,
+}: PlateProps) => {
   return (
     <PlateStyled>
       <PlateScrew $corner="tl" />
@@ -98,13 +136,18 @@ export const Plate = ({ label, value, description }: PlateProps) => {
       <PlateScrew $corner="br" />
       <PlateContent>
         <PlateHeading>
-          {label}
-          {value && (
-            <>
-              {" "}
-              <PlateHeadingValue>{value}</PlateHeadingValue>
-            </>
+          <PlateHeadingLine>{label}</PlateHeadingLine>
+          {(value || control) && (
+            <PlateHeadingLine>
+              {value && (
+                <PlateHeadingValue $empty={valueEmpty}>
+                  {value}
+                </PlateHeadingValue>
+              )}
+              {control && <PlateHeadingControl>{control}</PlateHeadingControl>}
+            </PlateHeadingLine>
           )}
+          {subheading && <PlateSubheading>{subheading}</PlateSubheading>}
         </PlateHeading>
         <PlateParagraph>{description}</PlateParagraph>
       </PlateContent>
