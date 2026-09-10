@@ -18,12 +18,23 @@ const HeaderStyled = styled.header`
 `;
 
 const HeaderImageContainer = styled.div`
+  position: relative;
+  height: 60vh;
   overflow: hidden;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    height: 65vh;
+  }
 `;
 
 const HeaderImage = styled.img`
+  display: block;
   width: 100%;
+  height: 100%;
   object-fit: cover;
+  object-position: center 100%;
+  transform: scale(1.1);
+  transform-origin: center 100%;
 `;
 
 export const Header = ({ children }: HeaderProps) => {
