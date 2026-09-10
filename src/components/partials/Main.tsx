@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import type { ReactNode } from "react";
 import { ThemeToggleButton } from "../ui/ThemeToggleButton";
+import { ScrollToTopButton } from "../ui/ScrollToTopButton";
 
 type MainProps = {
   children: ReactNode;
@@ -22,6 +23,7 @@ export const Main = ({ children }: MainProps) => {
     <MainStyled>
       <ThemeToggleButton />
       {children}
+      <ScrollToTopButton />
     </MainStyled>
   );
 };
