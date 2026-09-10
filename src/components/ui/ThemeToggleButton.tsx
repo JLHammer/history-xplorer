@@ -5,8 +5,6 @@ import toggleDark from "../../assets/toggle-dark.svg";
 import toggleLight from "../../assets/toggle-light.svg";
 
 const ThemeToggleButtonStyled = styled.button`
-  /* Main lays its children out in a column, so without this the button
-     stretches to the full width the way every block of content below it does */
   align-self: flex-start;
   cursor: pointer;
 `;

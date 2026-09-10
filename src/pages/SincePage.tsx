@@ -12,11 +12,9 @@ import {
   sinceUrl,
 } from "../api/history";
 
-// The oldest entries the API returns are a few thousand years BCE
 const MIN_YEAR = -9999;
 const MAX_YEAR = new Date().getFullYear();
 
-// Digits plus the letters and space for every era the API uses: BC, BCE, AD, CE
 const toYearInput = (value: string) =>
   value
     .replace(/[^0-9abcde ]/gi, "")
@@ -26,8 +24,6 @@ const toYearInput = (value: string) =>
 export const SincePage = () => {
   const [year, setYear] = useState("1947");
 
-  // Same interpretation the entries themselves get, so a BCE year lines up
-  // with the API's equivalent BC entries
   const parsedYear = parseEntryYear(year);
   const isValidYear =
     parsedYear !== null && parsedYear >= MIN_YEAR && parsedYear <= MAX_YEAR;
@@ -36,8 +32,6 @@ export const SincePage = () => {
     schema: historyResponseSchema,
   });
 
-  // An unusable year falls back to the full list rather than emptying it while
-  // a year is still being typed, since "19" is on the way to "1947"
   const events =
     data &&
     (isValidYear

@@ -6,11 +6,7 @@ export const historyLinkSchema = z.object({
 });
 
 export const historyEntrySchema = z.object({
-  // Free-form: "1969", "45 BC", "214/15", and on a few dates a whole leaked
-  // entry. Constraining this rejects the entire response, so interpretation is
-  // left to parseEntryYear instead.
   year: z.string(),
-  // Documented as a string, but a handful of entries per date send null
   text: z.string().nullable(),
   html: z.string(),
   links: z.array(historyLinkSchema),
@@ -18,7 +14,7 @@ export const historyEntrySchema = z.object({
 
 export const historyResponseSchema = z.object({
   date: z.string(),
-  url: z.string(), // wikipedia page
+  url: z.string(),
   data: z.object({
     Events: z.array(historyEntrySchema),
     Births: z.array(historyEntrySchema),

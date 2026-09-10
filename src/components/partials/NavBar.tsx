@@ -39,8 +39,6 @@ const NavBarLink = styled(NavLink)`
   &.active {
     color: ${({ theme }) => theme.colors.light.heading};
     text-decoration: underline;
-    /* text-underline-offset: 0.2rem;
-    transform: translateY(-4px); */
   }
 
   body.dark-mode & {

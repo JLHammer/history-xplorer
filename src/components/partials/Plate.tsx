@@ -100,8 +100,6 @@ const PlateHeading = styled.h1`
   }
 `;
 
-// A border rather than text-decoration, which browsers refuse to draw across
-// inputs, leaving the line split between the day and month fields
 const PlateHeadingValue = styled.span`
   display: inline-block;
   margin-left: ${({ theme }) => theme.spacing.xs};

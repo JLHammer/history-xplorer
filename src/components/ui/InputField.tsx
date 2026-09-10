@@ -18,8 +18,6 @@ const Input = styled.input<{ $width: string }>`
   color-scheme: light;
   outline: none;
 
-  /* The plate draws one underline under the whole value, so an individual
-     focused field is marked with the theme highlight instead of its own line */
   &:focus-visible {
     background-color: ${({ theme }) => theme.colors.light.highlight};
   }
@@ -28,7 +26,6 @@ const Input = styled.input<{ $width: string }>`
     cursor: pointer;
   }
 
-  /* Spinners crowd the heading, the year is typed or arrow-keyed instead */
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;

@@ -13,8 +13,6 @@ export const EventList = ({ entries, loading, error }: EventListProps) => {
     return <Message role="alert">Could not load events — {error}</Message>;
   }
 
-  // Entries from the previous date stay up while the next ones load, so the
-  // loading message only shows when there is nothing to look at yet
   if (!entries) {
     return loading ? <Message>Loading…</Message> : null;
   }
@@ -26,8 +24,6 @@ export const EventList = ({ entries, loading, error }: EventListProps) => {
   return (
     <ul>
       {entries.map((entry) => (
-        // The year repeats within a date and the text can be absent, so the
-        // rendered html is what reliably tells two entries apart
         <li key={entry.html}>
           <EventCard entry={entry} />
         </li>

@@ -23,10 +23,8 @@ export const useFetch = <T>(
   const [result, setResult] = useState<FetchResult<T> | null>(null);
 
   useEffect(() => {
-    // A null url means there is nothing to ask for yet, so keep the last result
     if (!url) return;
 
-    // Captured so the null check above still narrows inside the closure
     const requestUrl = url;
     const controller = new AbortController();
 
@@ -56,7 +54,6 @@ export const useFetch = <T>(
 
         setResult({ url: requestUrl, data: parsed.data, error: null });
       } catch (caught) {
-        // An aborted request was replaced by a newer one, so it owns the state
         if (controller.signal.aborted) return;
 
         setResult({
@@ -72,7 +69,6 @@ export const useFetch = <T>(
     return () => controller.abort();
   }, [url, method, schema]);
 
-  // Derived rather than stored, so no state is set synchronously in the effect
   const loading = url !== null && result?.url !== url;
 
   return { data: result?.data ?? null, error: result?.error ?? null, loading };
