@@ -1,5 +1,6 @@
 import { Message } from "../ui/Message";
 import { EventCard } from "../ui/EventCard";
+import { Timeline } from "./Timeline";
 import type { HistoryEntry } from "../../types/history";
 import type { DayOfYear } from "../../api/history";
 
@@ -42,13 +43,14 @@ export const EventList = ({
       {loading && progress && progress.total > 1 && (
         <Message aria-live="polite">{loadingMessage}</Message>
       )}
-      <ul>
+      <Timeline>
         {entries.map((entry) => (
-          <li key={`${entry.month}/${entry.day}:${entry.html}`}>
-            <EventCard entry={entry} />
-          </li>
+          <EventCard
+            key={`${entry.month}/${entry.day}:${entry.html}`}
+            entry={entry}
+          />
         ))}
-      </ul>
+      </Timeline>
     </>
   );
 };

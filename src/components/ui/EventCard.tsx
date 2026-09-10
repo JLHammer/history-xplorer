@@ -1,27 +1,27 @@
-import { formatEntryYear } from "../../api/history";
+import { formatDate, formatEntryYear } from "../../api/history";
+import { TimelineItem } from "../partials/Timeline";
+import type { DayOfYear } from "../../api/history";
 import type { HistoryEntry } from "../../types/history";
 
 type EventCardProps = {
-  entry: HistoryEntry;
+  entry: HistoryEntry & Partial<DayOfYear>;
 };
 
 export const EventCard = ({ entry }: EventCardProps) => {
   const [primaryLink] = entry.links;
 
+  const year = formatEntryYear(entry.year);
+  const { month, day } = entry;
+
   return (
-    <article>
-      <h2>{formatEntryYear(entry.year)}</h2>
-      {entry.text && <p>{entry.text}</p>}
-      {primaryLink && (
-        <a
-          href={primaryLink.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Read more about ${primaryLink.title}`}
-        >
-          Read more
-        </a>
-      )}
-    </article>
+    <TimelineItem
+      label={
+        month && day
+          ? formatDate({ month, day }, `year ${year}`)
+          : `Year ${year}`
+      }
+      text={entry.text}
+      link={primaryLink && { href: primaryLink.link, title: primaryLink.title }}
+    />
   );
 };
