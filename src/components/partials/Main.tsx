@@ -11,10 +11,10 @@ const MainStyled = styled.main`
   position: relative;
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.colors.light.background};
+  background-color: ${({ theme }) => theme.colors.light.surface};
 
   body.dark-mode & {
-    background-color: ${({ theme }) => theme.colors.dark.background};
+    background-color: ${({ theme }) => theme.colors.dark.surface};
   }
 `;
 

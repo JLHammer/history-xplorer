@@ -9,11 +9,11 @@ type HeaderProps = {
 const HeaderStyled = styled.header`
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.colors.light.background};
+  background-color: ${({ theme }) => theme.colors.light.surface};
   position: relative;
 
   body.dark-mode & {
-    background-color: ${({ theme }) => theme.colors.dark.background};
+    background-color: ${({ theme }) => theme.colors.dark.surface};
   }
 `;
 

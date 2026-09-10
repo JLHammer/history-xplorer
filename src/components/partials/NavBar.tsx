@@ -4,11 +4,12 @@ import { NavLink } from "react-router-dom";
 const NavBarStyled = styled.nav`
   display: flex;
   flex-direction: column;
-  padding: ${({ theme }) => theme.spacing.s};
-  background-color: ${({ theme }) => theme.colors.light.background};
+  margin-bottom: ${({ theme }) => theme.spacing.s};
+  padding: ${({ theme }) => theme.spacing.xs};
+  background-color: ${({ theme }) => theme.colors.light.surface};
 
   body.dark-mode & {
-    background-color: ${({ theme }) => theme.colors.dark.background};
+    background-color: ${({ theme }) => theme.colors.dark.surface};
   }
 `;
 
@@ -18,10 +19,10 @@ const NavUl = styled.ul`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: ${({ theme }) => theme.colors.light.background};
+  background-color: ${({ theme }) => theme.colors.light.surface};
   gap: 0.5rem;
   body.dark-mode & {
-    background-color: ${({ theme }) => theme.colors.dark.background};
+    background-color: ${({ theme }) => theme.colors.dark.surface};
   }
 `;
 
