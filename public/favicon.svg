@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The plate: charcoal ground with the bronze edge that runs from umber
+       at the top to walnut at the bottom, as it does in dark mode -->
+  <defs>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#695E48"/>
+      <stop offset="1" stop-color="#6B4B2E"/>
+    </linearGradient>
+  </defs>
+  <rect x="2.5" y="2.5" width="59" height="59" rx="11" fill="#1F1F1F" stroke="url(#edge)" stroke-width="4"/>
+  <!-- The timeline in khaki: the filled head it sets out from, the line,
+       a ring an entry hangs on, and the branch out to the entry. Drawn
+       heavier than on the page so it still reads at a tab's 16 pixels -->
+  <g fill="none" stroke="#C7BD8D" stroke-width="5" stroke-linecap="round">
+    <line x1="30" y1="22" x2="30" y2="54"/>
+    <line x1="37" y1="40" x2="51" y2="40"/>
+    <circle cx="30" cy="40" r="7" fill="#1F1F1F"/>
+  </g>
+  <circle cx="30" cy="17" r="8" fill="#C7BD8D"/>
+</svg>
